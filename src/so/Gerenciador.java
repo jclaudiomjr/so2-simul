@@ -104,10 +104,9 @@ public class Gerenciador
                 else if ( tempo_atual[1] == h1core1.getTempo_saida(1))
                 {
                     if ( tempo_atual[2] >= h1core1.getTempo_saida(2) )
-                    {
+                    {                       
                         h1core1.setStatus("finalizado");
                         So.insereDadosArquivo(h1core1.getTempo_saida(0)+":"+h1core1.getTempo_saida(1)+":"+h1core1.getTempo_saida(2)+": processo de nome:"+h1core1.getNome()+" foi finalizado. %n");
-                    
                         if ( ! fila_aptos.isEmpty() )
                         {                       
                             fila_aptos.get(0).setTempo_entrada_execucao(h1core1.getTempo_saida(0)+":"+h1core1.getTempo_saida(1)+":"+h1core1.getTempo_saida(2));
@@ -116,21 +115,34 @@ public class Gerenciador
                             host1.setCore1(fila_aptos.get(0));                       
                             fila_aptos.remove(0);
                             So.insereDadosArquivo(tempo_atual[0]+":"+tempo_atual[1]+":"+tempo_atual[2]+": processo de nome:"+fila_aptos.get(0).getNome()+" entrou em execução no Host1 no Core1.%n");
-                        }
+                        }                        
                     }
-                }
-            }            
+                }            
+            }
         }
         /** Inicio da verificação dos processos do host1 core2. */
         if ( host1.getCore2() != null )
         {
-            if ( tempo_atual[1] >= h1core2.getTempo_saida(1) )  
+            if ( tempo_atual[0] > h1core2.getTempo_saida(0) )
             {
-                if ( tempo_atual[2] >= h1core2.getTempo_saida(2) )
+                h1core2.setStatus("finalizado");
+                So.insereDadosArquivo(h1core2.getTempo_saida(0)+":"+h1core2.getTempo_saida(1)+":"+h1core2.getTempo_saida(2)+": processo de nome:"+h1core2.getNome()+" foi finalizado. %n");    
+                if ( ! fila_aptos.isEmpty() )
+                {
+                    fila_aptos.get(0).setTempo_entrada_execucao(h1core2.getTempo_saida(0)+":"+h1core2.getTempo_saida(1)+":"+h1core2.getTempo_saida(2));
+                    fila_aptos.get(0).setTempo_saida(calculaTempoSaida(fila_aptos.get(0).getTempo_entrada_execucao(), fila_aptos.get(0).getTempo_execucao()));
+                    host1.setCore2(null);
+                    host1.setCore2(fila_aptos.get(0));                        
+                    fila_aptos.remove(0);
+                    So.insereDadosArquivo(tempo_atual[0]+":"+tempo_atual[1]+":"+tempo_atual[2]+" processo de nome:"+fila_aptos.get(0).getNome()+" entrou em execução no Host1 no Core2.%n");
+                }
+            }
+            else if ( tempo_atual[0] == h1core2.getTempo_saida(0) )
+            {
+                if ( tempo_atual[1] > h1core2.getTempo_saida(1) )  
                 {
                     h1core2.setStatus("finalizado");
-                    So.insereDadosArquivo(h1core2.getTempo_saida(0)+":"+h1core2.getTempo_saida(1)+":"+h1core2.getTempo_saida(2)+": processo de nome:"+h1core2.getNome()+" foi finalizado. %n");
-                    
+                    So.insereDadosArquivo(h1core2.getTempo_saida(0)+":"+h1core2.getTempo_saida(1)+":"+h1core2.getTempo_saida(2)+": processo de nome:"+h1core2.getNome()+" foi finalizado. %n");    
                     if ( ! fila_aptos.isEmpty() )
                     {
                         fila_aptos.get(0).setTempo_entrada_execucao(h1core2.getTempo_saida(0)+":"+h1core2.getTempo_saida(1)+":"+h1core2.getTempo_saida(2));
@@ -141,19 +153,48 @@ public class Gerenciador
                         So.insereDadosArquivo(tempo_atual[0]+":"+tempo_atual[1]+":"+tempo_atual[2]+" processo de nome:"+fila_aptos.get(0).getNome()+" entrou em execução no Host1 no Core2.%n");
                     }
                 }
+                else if ( tempo_atual[1] == h1core2.getTempo_saida(1) )
+                {
+                    if ( tempo_atual[2] >= h1core2.getTempo_saida(2) )
+                    {
+                        h1core2.setStatus("finalizado");
+                        So.insereDadosArquivo(h1core2.getTempo_saida(0)+":"+h1core2.getTempo_saida(1)+":"+h1core2.getTempo_saida(2)+": processo de nome:"+h1core2.getNome()+" foi finalizado. %n");                    
+                        if ( ! fila_aptos.isEmpty() )
+                        {
+                            fila_aptos.get(0).setTempo_entrada_execucao(h1core2.getTempo_saida(0)+":"+h1core2.getTempo_saida(1)+":"+h1core2.getTempo_saida(2));
+                            fila_aptos.get(0).setTempo_saida(calculaTempoSaida(fila_aptos.get(0).getTempo_entrada_execucao(), fila_aptos.get(0).getTempo_execucao()));
+                            host1.setCore2(null);
+                            host1.setCore2(fila_aptos.get(0));                        
+                            fila_aptos.remove(0);
+                            So.insereDadosArquivo(tempo_atual[0]+":"+tempo_atual[1]+":"+tempo_atual[2]+" processo de nome:"+fila_aptos.get(0).getNome()+" entrou em execução no Host1 no Core2.%n");
+                        }
+                    }
+                }
             }
         }
         /** Inicio da verificação dos processos do host2 core1. */
         if ( host2.getCore1() != null )
         {
-            if ( tempo_atual[1] >= h2core1.getTempo_saida(1) )  
+            if ( tempo_atual[0] > h2core1.getTempo_saida(0) )
             {
-                if ( tempo_atual[2] >= h2core1.getTempo_saida(2) )
+                h2core1.setStatus("finalizado"); 
+                So.insereDadosArquivo(h2core1.getTempo_saida(0)+":"+h2core1.getTempo_saida(1)+":"+h2core1.getTempo_saida(2)+": processo de nome:"+h2core1.getNome()+" foi finalizado. %n");
+                if ( ! fila_aptos.isEmpty() )
+                {
+                    fila_aptos.get(0).setTempo_entrada_execucao(h2core1.getTempo_saida(0)+":"+h2core1.getTempo_saida(1)+":"+h2core1.getTempo_saida(2));
+                    fila_aptos.get(0).setTempo_saida(calculaTempoSaida(fila_aptos.get(0).getTempo_entrada_execucao(), fila_aptos.get(0).getTempo_execucao()));
+                    host2.setCore1(null);
+                    host2.setCore1(fila_aptos.get(0));                        
+                    fila_aptos.remove(0);
+                    So.insereDadosArquivo(tempo_atual[0]+":"+tempo_atual[1]+":"+tempo_atual[2]+" processo de nome:"+fila_aptos.get(0).getNome()+" entrou em execução no Host2 no Core1.%n");
+                 }
+            }
+            else if ( tempo_atual[0] == h2core1.getTempo_saida(0) )
+            {
+                if ( tempo_atual[1] > h2core1.getTempo_saida(1) )  
                 {
                     h2core1.setStatus("finalizado"); 
                     So.insereDadosArquivo(h2core1.getTempo_saida(0)+":"+h2core1.getTempo_saida(1)+":"+h2core1.getTempo_saida(2)+": processo de nome:"+h2core1.getNome()+" foi finalizado. %n");
-                    
-         
                     if ( ! fila_aptos.isEmpty() )
                     {
                         fila_aptos.get(0).setTempo_entrada_execucao(h2core1.getTempo_saida(0)+":"+h2core1.getTempo_saida(1)+":"+h2core1.getTempo_saida(2));
@@ -164,19 +205,48 @@ public class Gerenciador
                         So.insereDadosArquivo(tempo_atual[0]+":"+tempo_atual[1]+":"+tempo_atual[2]+" processo de nome:"+fila_aptos.get(0).getNome()+" entrou em execução no Host2 no Core1.%n");
                     }
                 }
+                if ( tempo_atual[1] == h2core1.getTempo_saida(1) )
+                {
+                    if ( tempo_atual[2] >= h2core1.getTempo_saida(2) )
+                    {
+                        h2core1.setStatus("finalizado"); 
+                        So.insereDadosArquivo(h2core1.getTempo_saida(0)+":"+h2core1.getTempo_saida(1)+":"+h2core1.getTempo_saida(2)+": processo de nome:"+h2core1.getNome()+" foi finalizado. %n");        
+                        if ( ! fila_aptos.isEmpty() )
+                        {
+                            fila_aptos.get(0).setTempo_entrada_execucao(h2core1.getTempo_saida(0)+":"+h2core1.getTempo_saida(1)+":"+h2core1.getTempo_saida(2));
+                            fila_aptos.get(0).setTempo_saida(calculaTempoSaida(fila_aptos.get(0).getTempo_entrada_execucao(), fila_aptos.get(0).getTempo_execucao()));
+                            host2.setCore1(null);
+                            host2.setCore1(fila_aptos.get(0));                        
+                            fila_aptos.remove(0);
+                            So.insereDadosArquivo(tempo_atual[0]+":"+tempo_atual[1]+":"+tempo_atual[2]+" processo de nome:"+fila_aptos.get(0).getNome()+" entrou em execução no Host2 no Core1.%n");
+                        }
+                    }                
+                }
             }
         }
         /** Inicio da verificação dos processos do host2 core2. */
         if ( host2.getCore2() != null )
         {
-            if ( tempo_atual[1] >= h2core2.getTempo_saida(1) )  
+            if ( tempo_atual[0] > h2core2.getTempo_saida(0) )
             {
-                if ( tempo_atual[2] >= h2core2.getTempo_saida(2) )
+                h2core2.setStatus("finalizado");
+                So.insereDadosArquivo(h2core2.getTempo_saida(0)+":"+h2core2.getTempo_saida(1)+":"+h2core2.getTempo_saida(2)+": processo de nome:"+h2core2.getNome()+" foi finalizado. %n");
+                if ( ! fila_aptos.isEmpty() )
+                {
+                    fila_aptos.get(0).setTempo_entrada_execucao(h2core2.getTempo_saida(0)+":"+h2core2.getTempo_saida(1)+":"+h2core2.getTempo_saida(2));
+                    fila_aptos.get(0).setTempo_saida(calculaTempoSaida(fila_aptos.get(0).getTempo_entrada_execucao(), fila_aptos.get(0).getTempo_execucao()));
+                    host2.setCore2(null);
+                    host2.setCore2(fila_aptos.get(0));                        
+                    fila_aptos.remove(0);
+                    So.insereDadosArquivo(tempo_atual[0]+":"+tempo_atual[1]+":"+tempo_atual[2]+" processo de nome:"+fila_aptos.get(0).getNome()+" entrou em execução no Host2 no Core2.%n");
+                }
+            }
+            else if ( tempo_atual[0] == h2core2.getTempo_saida(0) )
+            {
+                if ( tempo_atual[1] > h2core2.getTempo_saida(1) )  
                 {
                     h2core2.setStatus("finalizado");
                     So.insereDadosArquivo(h2core2.getTempo_saida(0)+":"+h2core2.getTempo_saida(1)+":"+h2core2.getTempo_saida(2)+": processo de nome:"+h2core2.getNome()+" foi finalizado. %n");
-                    
-
                     if ( ! fila_aptos.isEmpty() )
                     {
                         fila_aptos.get(0).setTempo_entrada_execucao(h2core2.getTempo_saida(0)+":"+h2core2.getTempo_saida(1)+":"+h2core2.getTempo_saida(2));
@@ -185,6 +255,23 @@ public class Gerenciador
                         host2.setCore2(fila_aptos.get(0));                        
                         fila_aptos.remove(0);
                         So.insereDadosArquivo(tempo_atual[0]+":"+tempo_atual[1]+":"+tempo_atual[2]+" processo de nome:"+fila_aptos.get(0).getNome()+" entrou em execução no Host2 no Core2.%n");
+                    }
+                }
+                else if ( tempo_atual[1] == h2core2.getTempo_saida(1) )
+                {
+                    if ( tempo_atual[2] >= h2core2.getTempo_saida(2) )
+                    {
+                        h2core2.setStatus("finalizado");
+                        So.insereDadosArquivo(h2core2.getTempo_saida(0)+":"+h2core2.getTempo_saida(1)+":"+h2core2.getTempo_saida(2)+": processo de nome:"+h2core2.getNome()+" foi finalizado. %n");
+                        if ( ! fila_aptos.isEmpty() )
+                        {
+                            fila_aptos.get(0).setTempo_entrada_execucao(h2core2.getTempo_saida(0)+":"+h2core2.getTempo_saida(1)+":"+h2core2.getTempo_saida(2));
+                            fila_aptos.get(0).setTempo_saida(calculaTempoSaida(fila_aptos.get(0).getTempo_entrada_execucao(), fila_aptos.get(0).getTempo_execucao()));
+                            host2.setCore2(null);
+                            host2.setCore2(fila_aptos.get(0));                        
+                            fila_aptos.remove(0);
+                            So.insereDadosArquivo(tempo_atual[0]+":"+tempo_atual[1]+":"+tempo_atual[2]+" processo de nome:"+fila_aptos.get(0).getNome()+" entrou em execução no Host2 no Core2.%n");
+                        }
                     }
                 }
             }
