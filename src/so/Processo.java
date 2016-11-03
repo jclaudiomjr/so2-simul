@@ -13,6 +13,7 @@ public class Processo {
     private final String tempo_criacao; /** tempo_criação receberá o tempo de criação, gerado pelo 'getTime()'. */
     private String tempo_entrada_execucao; /** tempo_entrada_execucao receberá o tempo em que o processo entra em execução. */
     private Integer tempo_saida[] = new Integer[3]; /** tempo_saida[] receberá o tempo em que o processo deve sair do processador */
+    private Integer tempo_restante_saida[] = new Integer[3];
     private String host; /** host receberá o host que o processo será executado. */
     private String status; /** status receberá o status do processo. */
 
