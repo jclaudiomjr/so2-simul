@@ -1,5 +1,6 @@
-# So_simuL (INCOMPLETO)
+# So_simuL (INCOMPLETO/INCOMPLETE)
 Trabalho de Sistemas Operacionais II - simulador
+
 
 O programa deve simular:
 - Gerenciador de processos de um SO.
@@ -10,6 +11,10 @@ Deve permitir a criação de processos. Mostrar os processos em execução e mos
 
 
 
-Grupo: José Claudio Jr, Gustavo Nikitiz, Matheus Sulzbach
+The program should simulate:
+- Process manager
+- Memory manager
 
+The simulator uses two hosts (two computers, host1 and host2), with two cores each (resulting four cores to manage).
+The codes are in pt-br.
 
