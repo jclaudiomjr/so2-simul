@@ -1,4 +1,4 @@
-# So_simuL
+# So_simuL (INCOMPLETO)
 Trabalho de Sistemas Operacionais II - simulador
 
 O programa deve simular:
