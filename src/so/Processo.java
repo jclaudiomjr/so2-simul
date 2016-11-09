@@ -13,7 +13,7 @@ public class Processo {
     private final String tempo_criacao; /** tempo_criação receberá o tempo de criação, gerado pelo 'getTime()'. */
     private String tempo_entrada_execucao; /** tempo_entrada_execucao receberá o tempo em que o processo entra em execução. */
     private Integer tempo_saida[] = new Integer[3]; /** tempo_saida[] receberá o tempo em que o processo deve sair do processador */
-    private Integer tempo_restante_saida[] = new Integer[3];
+    private Integer tempo_restante_execucao;
     private String host; /** host receberá o host que o processo será executado. */
     private String status; /** status receberá o status do processo. */
 
@@ -25,10 +25,11 @@ public class Processo {
      * @param tempo_criacao - tempo de criação do processo.
      * @param tempo_entrada_execucao - tempo de entrada em execução do processo.
      * @param tempo_saida - tempo para saída do processo.
+     * @param tempo_restante_execucao - tempo restante que o processo tem para executar (caso houver quantum)
      * @param host - host do processo.
      * @param status - status do processo.
      */
-    public Processo(Integer pid, String nome, String tamanho, String tempo_execucao, String tempo_criacao, String tempo_entrada_execucao, Integer[] tempo_saida, String host, String status) 
+    public Processo(Integer pid, String nome, String tamanho, String tempo_execucao, String tempo_criacao, String tempo_entrada_execucao, Integer[] tempo_saida, Integer tempo_restante_execucao,String host, String status) 
     {
         this.pid = pid;
         this.nome = nome;
@@ -37,10 +38,11 @@ public class Processo {
         this.tempo_criacao = tempo_criacao;
         this.tempo_entrada_execucao = tempo_entrada_execucao;
         this.tempo_saida = tempo_saida;
+        this.tempo_restante_execucao = tempo_restante_execucao;
         this.host = host;
         this.status = status;
     }
-    
+   
     /**
      * setter para o atributo status.
      * @param status - status do processo.

@@ -19,6 +19,9 @@ import java.text.DateFormat;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.io.IOException;
+import java.lang.Thread;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -37,6 +40,8 @@ public class So
     private static FileWriter arquivo;
     /** gravarArquivo irá inserir dados no arquivo. */
     private static PrintWriter gravarArquivo;
+    private static boolean controla_thread;
+    
     
     /** MAIN
      * @param args the command line arguments
@@ -69,10 +74,10 @@ public class So
                 for (;;)
                 {
                     System.out.println("Escalonador selecionado: 2 - Com quantum.");
-                    System.out.println("Informe o quantum (o quantum deve ser entre 2 a 4 inclusive:");
+                    System.out.println("Informe o quantum (o quantum deve ser maior ou igual a 5:");
                     System.out.print("Quantum:");
                     gerenciador.setQuantum(sc.nextLine());
-                    if ( ( gerenciador.getQuantum() >= 2 ) && ( gerenciador.getQuantum() <= 4 ) )
+                    if ( gerenciador.getQuantum() >= 5 ) 
                     {
                         System.out.println("Escalonador com quantum de "+gerenciador.getQuantum()+" unidades de tempo.");
                         System.out.println("_________________________________________________________________________________");
@@ -85,6 +90,7 @@ public class So
                     }
                     break;   
                 }
+                break;
             }
             else
             {
@@ -94,15 +100,17 @@ public class So
                 gerenciador.setEscalonador(sc.nextLine());
                 
             }
-
+            
         }
         
+        new Thread(verifica).start();
+        controla_thread = true;
+        sc.reset();
         /** Iteração para ficar pedindo o comando do usuário. Só terá fim caso o usuário digite EXIT */
         for (;;)
         {            
             
             //comando = sc.nextLine();
-            
             
             /** Mostra o menu de opções. */
             printOpcoesComando();
@@ -119,7 +127,7 @@ public class So
             if ( ( separa_string_comando[0].equals("CREATE") ) || ( separa_string_comando[0].equals("create") ) )
             {
                 /** gerenciador cria um processo, já enviando as informações das próximas posições do array de string. */
-                gerenciador.criarProcesso(separa_string_comando[1], separa_string_comando[2], separa_string_comando[3], getTime());
+                gerenciador.criarProcesso(separa_string_comando[1], separa_string_comando[2], separa_string_comando[3], getTime());               
             } 
             /** Verifica a primeira posição do array de string. Se for PS o gerenciador irá mostrar a tabela de processos */
             else if ( (separa_string_comando[0].equals("PS") ) || ( separa_string_comando[0].equals("ps") ) )
@@ -149,8 +157,10 @@ public class So
                 }
             }        
                else if ( ( comando.equals("EXIT") ) || ( comando.equals("exit") ))
-            {    
+            {            
                 arquivo.close();
+                controla_thread = false;
+                //Thread.currentThread().stop();
                 break;
             } 
             /** Se for alguma coisa diferente das opções do menu, entra aqui para informar comando invalido. */
@@ -232,11 +242,23 @@ public class So
     }
     
     
-    public static void verificaEscalonador()
+    public static Runnable verifica = new Runnable()
     {
+        public void run()
+        {
+            while (controla_thread)
+            {
+                gerenciador.verificaExecucao( gerenciador.getHost1().getCore1(), gerenciador.getHost1().getCore2(), gerenciador.getHost2().getCore1(), gerenciador.getHost2().getCore2());
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(So.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            
+        }
         
-        
-    }
+    };
    
 }
 

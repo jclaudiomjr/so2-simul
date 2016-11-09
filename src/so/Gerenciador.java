@@ -10,6 +10,7 @@ package so;
  * ArrayList: para utilizar Arraylist de processos criados e fila de prontos.
  */
 import java.util.ArrayList;
+import java.lang.Thread;
 
 /**
  * Classe Gerenciador - Responsável pela gerencia dos processos.
@@ -50,6 +51,20 @@ public class Gerenciador
         return gera_pid;
     }
     
+    public ArrayList getListaCriados()
+    {
+        return processos_criados;
+    }
+    
+    public Host getHost1()
+    {
+        return host1;
+    }
+    
+    public Host getHost2()
+    {
+        return host2;
+    }
     
     /** Metodo que verifica se o tempo de execução de cada processo em execução não excedeu seu tempo
      * 
@@ -58,6 +73,7 @@ public class Gerenciador
      * @param h2core1 - core1 do host2
      * @param h2core2 - core2 do host2
      */
+    
     public void verificaExecucao(Processo h1core1, Processo h1core2, Processo h2core1, Processo h2core2)
     {
         /** separa_string_tempo_atual receberá, os valores retornado de gettime(), de forma separada por ":". */
@@ -278,6 +294,30 @@ public class Gerenciador
         }
     }
     
+    public void verificaExecucaoQUANTUM(Processo h1core1, Processo h1core2, Processo h2core1, Processo h2core2)
+    {
+        new Thread() 
+        {
+            @Override
+            public void run()
+            {
+                String separa_string_tempo_atual[] = So.getTime().split(":");
+                Integer tempo_atual[] = new Integer[3];
+        
+                tempo_atual[0] = Integer.parseInt(separa_string_tempo_atual[0]);
+                tempo_atual[1] = Integer.parseInt(separa_string_tempo_atual[1]);
+                tempo_atual[2] = Integer.parseInt(separa_string_tempo_atual[2]);
+                
+                if ( host1.getCore1() != null )
+                {
+                    
+                }
+            }
+            
+            
+        }.start();
+    }
+    
     /**
      * Seta o tipo de escalonador.
      * @param escalonador - tipo de escalonador.
@@ -324,27 +364,51 @@ public class Gerenciador
     public void criarProcesso(String nome, String tamanho, String tempo_execucao, String tempo_criacao)
     {       
         String entrada_execucao = null;
-        if ( !processos_criados.isEmpty() )
+        Integer tempo_restante = null;
+        /*if ( !processos_criados.isEmpty() )
         {    
-            verificaExecucao(host1.getCore1(), host1.getCore2(), host2.getCore1(), host2.getCore2());
-        }         
-        /** disponibilidade vai receber o valor retornado do método 'getCore_Disp()'. O método verifica qual core está disponível do HOST 1. */
-        disponibilidade = host1.getCore_Disp();
+            if ( escalonador.equals("1") )
+            {
+                verificaExecucao(host1.getCore1(), host1.getCore2(), host2.getCore1(), host2.getCore2());
+            }
+            else
+            {
+                verificaExecucaoQUANTUM(host1.getCore1(), host1.getCore2(), host2.getCore1(), host2.getCore2());
+            }
+        } */
         /** Início da verificação (para o host 1), se for 1 o processo irá para o core1 (do host1), se for 2 o processo vai para o core2 do host2). */
-        if ( disponibilidade == 1 )
+        if ( host1.getCore_Disp() == 1 )
         {                            
             entrada_execucao = tempo_criacao;
-            /** Cria o processo, adicionando ao arraylist de processos_criados. */
-            processos_criados.add(new Processo( geraPID(), nome, tamanho, tempo_execucao, tempo_criacao, entrada_execucao,calculaTempoSaida(entrada_execucao,tempo_execucao), "Host 1", "executando" ));
+            if ( escalonador.equals("1") )
+            {
+                /** Cria o processo, adicionando ao arraylist de processos_criados. */
+                processos_criados.add(new Processo( geraPID(), nome, tamanho, tempo_execucao, tempo_criacao, entrada_execucao,calculaTempoSaida(entrada_execucao,tempo_execucao), null,"Host 1", "executando" ));
+            }
+            else
+            {
+                tempo_restante = Integer.parseInt(tempo_execucao);
+                tempo_execucao = Integer.toString(quantum);
+                processos_criados.add(new Processo( geraPID(), nome, tamanho, tempo_execucao, tempo_criacao, entrada_execucao,calculaTempoSaida(entrada_execucao,tempo_execucao), tempo_restante,"Host 1", "executando" ));
+            }
             /** core1 do host1 recebe o processo. */
             host1.setCore1(processos_criados.get(processos_criados.size() - 1));
             So.insereDadosArquivo(tempo_criacao+" Processo de nome "+nome+" criado no Host1 executando no Core1.%n");
         } 
-        else if ( disponibilidade == 2 )
+        else if ( host1.getCore_Disp() == 2 )
         {               
             entrada_execucao = tempo_criacao;
-            /** Cria o processo, adicionando ao arraylist de processos_criados. */
-            processos_criados.add(new Processo( geraPID(), nome, tamanho, tempo_execucao, tempo_criacao, entrada_execucao,calculaTempoSaida(entrada_execucao,tempo_execucao), "Host 1", "executando" ));
+            if (escalonador.equals("1") )
+            {
+                /** Cria o processo, adicionando ao arraylist de processos_criados. */
+                processos_criados.add(new Processo( geraPID(), nome, tamanho, tempo_execucao, tempo_criacao, entrada_execucao,calculaTempoSaida(entrada_execucao,tempo_execucao), null,"Host 1", "executando" ));
+            }
+            else
+            {
+                tempo_restante = Integer.parseInt(tempo_execucao);
+                tempo_execucao = Integer.toString(quantum);
+                processos_criados.add(new Processo( geraPID(), nome, tamanho, tempo_execucao, tempo_criacao, entrada_execucao,calculaTempoSaida(entrada_execucao,tempo_execucao), tempo_restante,"Host 1", "executando" ));
+            }
             /** core2 do host1 recebe o processo. */
             host1.setCore2(processos_criados.get(processos_criados.size() - 1));
             So.insereDadosArquivo(tempo_criacao+" Processo de nome "+nome+" criado no Host1 executando no Core2.%n");
@@ -352,23 +416,39 @@ public class Gerenciador
         /** fim da verificação para o host1 e início da verificação para o host2 caso não encontre um core disponível no host1. */
         else
         {
-            /** Mesmo procedimento, agora verificando o HOST 2. */
-            disponibilidade = host2.getCore_Disp();
             /** Início da verificação para host2, se for 1 o processo irá para o core1 (do host2), se for 2 irá para o core2 (do host2). */
-            if ( disponibilidade == 1 )
+            if ( host2.getCore_Disp() == 1 )
             {                    
                 entrada_execucao = tempo_criacao;
-                /** Cria o processo, adicionando ao arraylist de processos_criados. */
-                processos_criados.add(new Processo( geraPID(), nome, tamanho, tempo_execucao, tempo_criacao, entrada_execucao,calculaTempoSaida(entrada_execucao,tempo_execucao), "Host 2", "executando" ));
+                if ( escalonador.equals("1") )
+                {
+                    /** Cria o processo, adicionando ao arraylist de processos_criados. */
+                    processos_criados.add(new Processo( geraPID(), nome, tamanho, tempo_execucao, tempo_criacao, entrada_execucao,calculaTempoSaida(entrada_execucao,tempo_execucao), null,"Host 2", "executando" ));
+                }
+                else
+                {
+                    tempo_restante = Integer.parseInt(tempo_execucao);
+                    tempo_execucao = Integer.toString(quantum);
+                    processos_criados.add(new Processo( geraPID(), nome, tamanho, tempo_execucao, tempo_criacao, entrada_execucao,calculaTempoSaida(entrada_execucao,tempo_execucao), tempo_restante,"Host 2", "executando" ));
+                }
                 /** core1 do host2 recebe o processo. */
                 host2.setCore1(processos_criados.get(processos_criados.size() - 1));
                 So.insereDadosArquivo(tempo_criacao+" Processo de nome "+nome+" criado no Host2 executando no Core1.%n");
             } 
-            else if ( disponibilidade == 2 )
+            else if ( host2.getCore_Disp() == 2 )
             {
                 entrada_execucao = tempo_criacao;
-                /** Cria o processo, adicionando ao arraylist de processos_criados. */
-                processos_criados.add(new Processo( geraPID(), nome, tamanho, tempo_execucao, tempo_criacao, entrada_execucao,calculaTempoSaida(entrada_execucao,tempo_execucao), "Host 2", "executando" ));
+                if ( escalonador.equals("1") )
+                {
+                    /** Cria o processo, adicionando ao arraylist de processos_criados. */
+                    processos_criados.add(new Processo( geraPID(), nome, tamanho, tempo_execucao, tempo_criacao, entrada_execucao,calculaTempoSaida(entrada_execucao,tempo_execucao), null,"Host 2", "executando" ));
+                }
+                else
+                {
+                    tempo_restante = Integer.parseInt(tempo_execucao);
+                    tempo_execucao = Integer.toString(quantum);
+                    processos_criados.add(new Processo( geraPID(), nome, tamanho, tempo_execucao, tempo_criacao, entrada_execucao,calculaTempoSaida(entrada_execucao,tempo_execucao), tempo_restante,"Host 2", "executando" ));
+                }
                 /** core2 do host2 recebe o processo. */
                 host2.setCore2(processos_criados.get(processos_criados.size() - 1));
                 So.insereDadosArquivo(tempo_criacao+" Processo de nome "+nome+" criado no Host2 executando no Core2.%n");
@@ -376,8 +456,17 @@ public class Gerenciador
             /** Fim da verificação para host2. Caso não ache um core disponível em nenhum host, o processo é criado no arraylist de processos_criados e também é colocado no arraylist de fila_aptos. */
             else
             {           
-                /** Cria o processo, adicionando ao arraylist de processos_criados. */
-                processos_criados.add(new Processo( geraPID(), nome, tamanho, tempo_execucao, tempo_criacao, entrada_execucao, null, "?", "apto" ));
+                if ( escalonador.equals("1") )
+                {
+                    /** Cria o processo, adicionando ao arraylist de processos_criados. */
+                    processos_criados.add(new Processo( geraPID(), nome, tamanho, tempo_execucao, tempo_criacao, entrada_execucao, null, null,"?", "apto" ));
+                }
+                else
+                {
+                    tempo_restante = Integer.parseInt(tempo_execucao);
+                    tempo_execucao = Integer.toString(quantum);
+                    processos_criados.add(new Processo( geraPID(), nome, tamanho, tempo_execucao, tempo_criacao, entrada_execucao, null, tempo_restante,"?", "apto" ));
+                }
                 /** O último processo criado é adicionado na fila de aptos. */
                 fila_aptos.add(processos_criados.get(processos_criados.size() - 1));
                 So.insereDadosArquivo(tempo_criacao+" Processo de nome "+nome+" criado e colocado na fila de aptos.%n");
@@ -434,10 +523,10 @@ public class Gerenciador
     {
         int aux;
         
-        if ( !processos_criados.isEmpty() )
+        /*if ( !processos_criados.isEmpty() )
         {    
             verificaExecucao(host1.getCore1(), host1.getCore2(), host2.getCore1(), host2.getCore2());
-        }
+        } */
         
         if ( !processos_criados.isEmpty() )
         {
