@@ -1,8 +1,3 @@
-/**  Programa simulador de um SO.
- *   Trabalho de SO II.
- */
-
-
 package so;
 
 /** 
@@ -18,27 +13,23 @@ import java.lang.Thread;
  */
 public class Gerenciador 
 {   
-    private  Integer gera_pid; /** seq_proc é usada no método geraPID() para gerar um novo PID de numero sequencial. */
-    private  Memoria memoria; /** Instância que controla-rá futuramente os processos na memória. */    
-    private  Host host1, host2; /** Instâncias para simular duas máquinas. */    
-    private  Integer disponibilidade; /** Usada para verificar a disponibilidade dos cores dos Hosts. */
-    private  ArrayList<Processo> fila_aptos; /** Armazena processos prontos para executar. */
-    private  ArrayList<Processo> processos_criados; /** Armazena todos os processos criados. */
-    private String escalonador; /** Tipo do escalonador */
-    private int quantum; /** Quantum de tempo */
+    private Integer gera_pid;      /** seq_proc é usada no método geraPID() para gerar um novo PID de numero sequencial. */
+    private Memoria memoria;       /** Instância que controla-rá futuramente os processos na memória. */    
+    private Host host1, host2;     /** Instâncias para simular duas máquinas. */
+    private ArrayList<Processo> fila_aptos;        /** Armazena processos prontos para executar. */
+    private ArrayList<Processo> processos_criados;     /** Armazena todos os processos criados. */
+    private String escalonador;     /** Tipo do escalonador */
+    private int quantum;        /** Quantum de tempo */
     
     /** Construtor da classe Gerenciador, o contrutor já irá instanciar também uma memória e dois Hosts. */
     public Gerenciador()  
-    {        
-        
-        this.disponibilidade = null;
+    {
         this.gera_pid = 0;
         this.memoria = new Memoria();
         this.host1 = new Host();
         this.host2 = new Host();
         this.processos_criados = new ArrayList<>();
         this.fila_aptos = new ArrayList<>();
-        
     }
 
     /** Gera um pid de forma sequancial, para cada processo.
@@ -51,16 +42,28 @@ public class Gerenciador
         return gera_pid;
     }
     
+    /**
+     * Retorna o arraylist de todos os processos criados.
+     * @return processos_criados - Arraylist de processos criados.
+     */
     public ArrayList getListaCriados()
     {
         return processos_criados;
     }
     
+    /**
+     * Retorna o host 1
+     * @return host1 - Host 1 do sistema.
+     */
     public Host getHost1()
     {
         return host1;
     }
     
+    /** 
+     * Retorna o host 2
+     * @return host2 - Host 2 do sistema
+     */
     public Host getHost2()
     {
         return host2;
@@ -80,6 +83,7 @@ public class Gerenciador
         String separa_string_tempo_atual[] = So.getTime().split(":");
         Integer tempo_atual[] = new Integer[3];
         
+        /** tempo_atual recebe os valores de separa_string_tempo_atual para ser feita a verificação posteriormente */
         tempo_atual[0] = Integer.parseInt(separa_string_tempo_atual[0]);
         tempo_atual[1] = Integer.parseInt(separa_string_tempo_atual[1]);
         tempo_atual[2] = Integer.parseInt(separa_string_tempo_atual[2]);        
@@ -87,22 +91,32 @@ public class Gerenciador
         /** Inicio da verificação dos processos do host1 core1. */
         if ( host1.getCore1() != null )
         {
+            /** Se a hora (HH) atual for maior que a hora do processo, o processo será finalizado. */
             if ( tempo_atual[0] > h1core1.getTempo_saida(0) )
             {                
                 h1core1.setStatus("finalizado");
+                /** Insere a informação no arquivo txt de que o processo foi finalizado. */
                 So.insereDadosArquivo(h1core1.getTempo_saida(0)+":"+h1core1.getTempo_saida(1)+":"+h1core1.getTempo_saida(2)+": processo de nome:"+h1core1.getNome()+" foi finalizado. %n");
+                /** Verifica se existe processo na fila de aptos. */
                 if ( ! fila_aptos.isEmpty() )
                 {                       
+                    /** Calcula o tempo de entrada em execução do processo que irá ocupar o core1. */
                     fila_aptos.get(0).setTempo_entrada_execucao(h1core1.getTempo_saida(0)+":"+h1core1.getTempo_saida(1)+":"+h1core1.getTempo_saida(2));
+                    /** Calcula o tempo de saída do processo que irá ocupar o core1. */
                     fila_aptos.get(0).setTempo_saida(calculaTempoSaida(fila_aptos.get(0).getTempo_entrada_execucao(), fila_aptos.get(0).getTempo_execucao()));
                     host1.setCore1(null);                        
+                    /** Seta o primeiro processo da fila de aptos no core1. */
                     host1.setCore1(fila_aptos.get(0));                       
+                    /** remove o processo da fila de aptos, pois já está em execução. */
                     fila_aptos.remove(0);
+                    /** Insere a informação no arquivo txt que o processo entrou em execução no core1. */
                     So.insereDadosArquivo(tempo_atual[0]+":"+tempo_atual[1]+":"+tempo_atual[2]+": processo de nome:"+fila_aptos.get(0).getNome()+" entrou em execução no Host1 no Core1.%n");
                 }
             }
+            /** Se a hora do tempo atual é IGUAL a hora do processo, será feita a verificação dos minutos (MM). */
             else if ( tempo_atual[0] == h1core1.getTempo_saida(0) )
             {               
+                /** A hora atual é igual a hora do processo, então se o minuto do tempo atual for maior que o do processo, o processo será finalizado. */
                 if ( tempo_atual[1] > h1core1.getTempo_saida(1) )  
                 {
                     h1core1.setStatus("finalizado");
@@ -111,14 +125,16 @@ public class Gerenciador
                     {                       
                         fila_aptos.get(0).setTempo_entrada_execucao(h1core1.getTempo_saida(0)+":"+h1core1.getTempo_saida(1)+":"+h1core1.getTempo_saida(2));
                         fila_aptos.get(0).setTempo_saida(calculaTempoSaida(fila_aptos.get(0).getTempo_entrada_execucao(), fila_aptos.get(0).getTempo_execucao()));
-                        host1.setCore1(null);                        
-                        host1.setCore1(fila_aptos.get(0));                       
-                        fila_aptos.remove(0);
+                        host1.setCore1(null);
+                        host1.setCore1(fila_aptos.get(0));
+                        fila_aptos.remove(0);                       
                         So.insereDadosArquivo(tempo_atual[0]+":"+tempo_atual[1]+":"+tempo_atual[2]+": processo de nome:"+fila_aptos.get(0).getNome()+" entrou em execução no Host1 no Core1.%n");
                     }
                 }
+                /** Verifica se o minuto do tempo atual é igual ao minuto do processo. Se verdadeiro será feita a verificação dos segundos*/
                 else if ( tempo_atual[1] == h1core1.getTempo_saida(1))
                 {
+                    /** Se o segundo do tempo atual for maior que o segundo do processo, o processo será finalizado. */
                     if ( tempo_atual[2] >= h1core1.getTempo_saida(2) )
                     {                       
                         h1core1.setStatus("finalizado");
@@ -136,7 +152,9 @@ public class Gerenciador
                 }            
             }
         }
-        /** Inicio da verificação dos processos do host1 core2. */
+        /** Inicio da verificação dos processos do host1 core2. 
+        /*  É usada as mesmas regras, verificações do host1 core1.
+        */
         if ( host1.getCore2() != null )
         {
             if ( tempo_atual[0] > h1core2.getTempo_saida(0) )
@@ -188,7 +206,9 @@ public class Gerenciador
                 }
             }
         }
-        /** Inicio da verificação dos processos do host2 core1. */
+        /** Inicio da verificação dos processos do host2 core1.
+        /*  Mesmas regras e verificações anteriores.
+        */
         if ( host2.getCore1() != null )
         {
             if ( tempo_atual[0] > h2core1.getTempo_saida(0) )
@@ -240,7 +260,9 @@ public class Gerenciador
                 }
             }
         }
-        /** Inicio da verificação dos processos do host2 core2. */
+        /** Inicio da verificação dos processos do host2 core2. 
+        /* Mesmas regras e verificações anteriores. 
+        */
         if ( host2.getCore2() != null )
         {
             if ( tempo_atual[0] > h2core2.getTempo_saida(0) )
@@ -294,28 +316,153 @@ public class Gerenciador
         }
     }
     
-    public void verificaExecucaoQUANTUM(Processo h1core1, Processo h1core2, Processo h2core1, Processo h2core2)
+    public void verificaExecucaoThread(Processo processo_executando)
     {
-        new Thread() 
-        {
-            @Override
-            public void run()
-            {
-                String separa_string_tempo_atual[] = So.getTime().split(":");
-                Integer tempo_atual[] = new Integer[3];
+        /** separa_string_tempo_atual receberá, os valores retornado de gettime(), de forma separada por ":". */
+        String separa_string_tempo_atual[] = So.getTime().split(":");
+        Integer tempo_atual[] = new Integer[3];
+
+        /** tempo_atual recebe os valores de separa_string_tempo_atual para ser feita a verificação posteriormente */
+        tempo_atual[0] = Integer.parseInt(separa_string_tempo_atual[0]);
+        tempo_atual[1] = Integer.parseInt(separa_string_tempo_atual[1]);
+        tempo_atual[2] = Integer.parseInt(separa_string_tempo_atual[2]);        
         
-                tempo_atual[0] = Integer.parseInt(separa_string_tempo_atual[0]);
-                tempo_atual[1] = Integer.parseInt(separa_string_tempo_atual[1]);
-                tempo_atual[2] = Integer.parseInt(separa_string_tempo_atual[2]);
-                
-                if ( host1.getCore1() != null )
-                {
-                    
+        /** Inicio da verificação dos processos do host1 core1. */
+        
+        
+            /** Se a hora (HH) atual for maior que a hora do processo, o processo será finalizado. */
+            if ( tempo_atual[0] > processo_executando.getTempo_saida(0) )
+            {                
+                processo_executando.setStatus("finalizado");
+                /** Insere a informação no arquivo txt de que o processo foi finalizado. */
+                So.insereDadosArquivo(processo_executando.getTempo_saida(0)+":"+processo_executando.getTempo_saida(1)+":"+processo_executando.getTempo_saida(2)+": processo de nome:"+processo_executando.getNome()+" foi finalizado. %n");
+                /** Verifica se existe processo na fila de aptos. */
+                if ( ! fila_aptos.isEmpty() )
+                {                       
+                    /** Calcula o tempo de entrada em execução do processo que irá ocupar o core1. */
+                    fila_aptos.get(0).setTempo_entrada_execucao(processo_executando.getTempo_saida(0)+":"+processo_executando.getTempo_saida(1)+":"+processo_executando.getTempo_saida(2));
+                    /** Calcula o tempo de saída do processo que irá ocupar o core1. */
+                    fila_aptos.get(0).setTempo_saida(calculaTempoSaida(fila_aptos.get(0).getTempo_entrada_execucao(), fila_aptos.get(0).getTempo_execucao()));
+                    if ( host1.getCore1().hashCode() == processo_executando.hashCode() )
+                    {
+                        host1.setCore1(null);
+                        /** Seta o primeiro processo da fila de aptos no core1 do Host1. */
+                        host1.setCore1(fila_aptos.get(0));
+                    }
+                    else if ( host1.getCore2().hashCode() == processo_executando.hashCode() )
+                    {
+                        host1.setCore2(null);
+                        /** Seta o primeiro processo da fila de aptos no core2 do Host1. */
+                        host1.setCore2(fila_aptos.get(0));
+                    }
+                    else if ( host1.getCore2().hashCode() == processo_executando.hashCode() )
+                    {
+                        host2.setCore1(null);
+                        /** Seta o primeiro processo da fila de aptos no core1 do Host2. */
+                        host2.setCore1(fila_aptos.get(0));
+                    }
+                    else if ( host1.getCore2().hashCode() == processo_executando.hashCode() )
+                    {
+                        host2.setCore2(null);
+                        /** Seta o primeiro processo da fila de aptos no core2 do Host2. */
+                        host2.setCore2(fila_aptos.get(0));
+                    }
+                    /** remove o processo da fila de aptos, pois já está em execução. */
+                    fila_aptos.remove(0);
+                    /** Insere a informação no arquivo txt que o processo entrou em execução no core1. */
+                    So.insereDadosArquivo(tempo_atual[0]+":"+tempo_atual[1]+":"+tempo_atual[2]+": processo de nome:"+fila_aptos.get(0).getNome()+" entrou em execução.%n");
                 }
             }
-            
-            
-        }.start();
+            /** Se a hora do tempo atual é IGUAL a hora do processo, será feita a verificação dos minutos (MM). */
+            else if ( tempo_atual[0] == processo_executando.getTempo_saida(0) )
+            {               
+                /** A hora atual é igual a hora do processo, então se o minuto do tempo atual for maior que o do processo, o processo será finalizado. */
+                if ( tempo_atual[1] > processo_executando.getTempo_saida(1) )  
+                {
+                    processo_executando.setStatus("finalizado");
+                    So.insereDadosArquivo(processo_executando.getTempo_saida(0)+":"+processo_executando.getTempo_saida(1)+":"+processo_executando.getTempo_saida(2)+": processo de nome:"+processo_executando.getNome()+" foi finalizado. %n");
+                    if ( ! fila_aptos.isEmpty() )
+                    {                       
+                        /** Calcula o tempo de entrada em execução do processo que irá ocupar o core1. */
+                        fila_aptos.get(0).setTempo_entrada_execucao(processo_executando.getTempo_saida(0)+":"+processo_executando.getTempo_saida(1)+":"+processo_executando.getTempo_saida(2));
+                        /** Calcula o tempo de saída do processo que irá ocupar o core1. */
+                        fila_aptos.get(0).setTempo_saida(calculaTempoSaida(fila_aptos.get(0).getTempo_entrada_execucao(), fila_aptos.get(0).getTempo_execucao()));
+                        if ( host1.getCore1().hashCode() == processo_executando.hashCode() )
+                        {
+                            host1.setCore1(null);
+                            /** Seta o primeiro processo da fila de aptos no core1 do Host1. */
+                            host1.setCore1(fila_aptos.get(0));
+                        }
+                        else if ( host1.getCore2().hashCode() == processo_executando.hashCode() )
+                        {
+                            host1.setCore2(null);
+                            /** Seta o primeiro processo da fila de aptos no core2 do Host1. */
+                            host1.setCore2(fila_aptos.get(0));
+                        }
+                        else if ( host1.getCore2().hashCode() == processo_executando.hashCode() )
+                        {
+                            host2.setCore1(null);
+                            /** Seta o primeiro processo da fila de aptos no core1 do Host2. */
+                            host2.setCore1(fila_aptos.get(0));
+                        }
+                        else if ( host1.getCore2().hashCode() == processo_executando.hashCode() )
+                        {
+                            host2.setCore2(null);
+                            /** Seta o primeiro processo da fila de aptos no core2 do Host2. */
+                            host2.setCore2(fila_aptos.get(0));
+                        }
+                        /** remove o processo da fila de aptos, pois já está em execução. */
+                        fila_aptos.remove(0);
+                        /** Insere a informação no arquivo txt que o processo entrou em execução no core1. */
+                        So.insereDadosArquivo(tempo_atual[0]+":"+tempo_atual[1]+":"+tempo_atual[2]+": processo de nome:"+fila_aptos.get(0).getNome()+" entrou em execução.%n");
+                    }
+                }
+                /** Verifica se o minuto do tempo atual é igual ao minuto do processo. Se verdadeiro será feita a verificação dos segundos*/
+                else if ( tempo_atual[1] == processo_executando.getTempo_saida(1))
+                {
+                    /** Se o segundo do tempo atual for maior que o segundo do processo, o processo será finalizado. */
+                    if ( tempo_atual[2] >= processo_executando.getTempo_saida(2) )
+                    {                       
+                        processo_executando.setStatus("finalizado");
+                        So.insereDadosArquivo(processo_executando.getTempo_saida(0)+":"+processo_executando.getTempo_saida(1)+":"+processo_executando.getTempo_saida(2)+": processo de nome:"+processo_executando.getNome()+" foi finalizado. %n");
+                        if ( ! fila_aptos.isEmpty() )
+                    {                       
+                        /** Calcula o tempo de entrada em execução do processo que irá ocupar o core1. */
+                        fila_aptos.get(0).setTempo_entrada_execucao(processo_executando.getTempo_saida(0)+":"+processo_executando.getTempo_saida(1)+":"+processo_executando.getTempo_saida(2));
+                        /** Calcula o tempo de saída do processo que irá ocupar o core1. */
+                        fila_aptos.get(0).setTempo_saida(calculaTempoSaida(fila_aptos.get(0).getTempo_entrada_execucao(), fila_aptos.get(0).getTempo_execucao()));
+                        if ( host1.getCore1().hashCode() == processo_executando.hashCode() )
+                        {
+                            host1.setCore1(null);
+                            /** Seta o primeiro processo da fila de aptos no core1 do Host1. */
+                            host1.setCore1(fila_aptos.get(0));
+                        }
+                        else if ( host1.getCore2().hashCode() == processo_executando.hashCode() )
+                        {
+                            host1.setCore2(null);
+                            /** Seta o primeiro processo da fila de aptos no core2 do Host1. */
+                            host1.setCore2(fila_aptos.get(0));
+                        }
+                        else if ( host1.getCore2().hashCode() == processo_executando.hashCode() )
+                        {
+                            host2.setCore1(null);
+                            /** Seta o primeiro processo da fila de aptos no core1 do Host2. */
+                            host2.setCore1(fila_aptos.get(0));
+                        }
+                        else if ( host1.getCore2().hashCode() == processo_executando.hashCode() )
+                        {
+                            host2.setCore2(null);
+                            /** Seta o primeiro processo da fila de aptos no core2 do Host2. */
+                            host2.setCore2(fila_aptos.get(0));
+                        }
+                        /** remove o processo da fila de aptos, pois já está em execução. */
+                        fila_aptos.remove(0);
+                        /** Insere a informação no arquivo txt que o processo entrou em execução no core1. */
+                        So.insereDadosArquivo(tempo_atual[0]+":"+tempo_atual[1]+":"+tempo_atual[2]+": processo de nome:"+fila_aptos.get(0).getNome()+" entrou em execução.%n");
+                    }                        
+                }
+            }            
+        }
     }
     
     /**
@@ -375,7 +522,7 @@ public class Gerenciador
             {
                 verificaExecucaoQUANTUM(host1.getCore1(), host1.getCore2(), host2.getCore1(), host2.getCore2());
             }
-        } */
+        } */        
         /** Início da verificação (para o host 1), se for 1 o processo irá para o core1 (do host1), se for 2 o processo vai para o core2 do host2). */
         if ( host1.getCore_Disp() == 1 )
         {                            
@@ -383,13 +530,13 @@ public class Gerenciador
             if ( escalonador.equals("1") )
             {
                 /** Cria o processo, adicionando ao arraylist de processos_criados. */
-                processos_criados.add(new Processo( geraPID(), nome, tamanho, tempo_execucao, tempo_criacao, entrada_execucao,calculaTempoSaida(entrada_execucao,tempo_execucao), null,"Host 1", "executando" ));
+                processos_criados.add(new Processo( geraPID(), nome, tamanho, tempo_execucao, tempo_criacao, entrada_execucao,calculaTempoSaida(entrada_execucao,tempo_execucao), null, getHost1(), "executando" ));
             }
             else
             {
                 tempo_restante = Integer.parseInt(tempo_execucao);
                 tempo_execucao = Integer.toString(quantum);
-                processos_criados.add(new Processo( geraPID(), nome, tamanho, tempo_execucao, tempo_criacao, entrada_execucao,calculaTempoSaida(entrada_execucao,tempo_execucao), tempo_restante,"Host 1", "executando" ));
+                processos_criados.add(new Processo( geraPID(), nome, tamanho, tempo_execucao, tempo_criacao, entrada_execucao,calculaTempoSaida(entrada_execucao,tempo_execucao), tempo_restante, getHost1(), "executando" ));
             }
             /** core1 do host1 recebe o processo. */
             host1.setCore1(processos_criados.get(processos_criados.size() - 1));
@@ -401,13 +548,13 @@ public class Gerenciador
             if (escalonador.equals("1") )
             {
                 /** Cria o processo, adicionando ao arraylist de processos_criados. */
-                processos_criados.add(new Processo( geraPID(), nome, tamanho, tempo_execucao, tempo_criacao, entrada_execucao,calculaTempoSaida(entrada_execucao,tempo_execucao), null,"Host 1", "executando" ));
+                processos_criados.add(new Processo( geraPID(), nome, tamanho, tempo_execucao, tempo_criacao, entrada_execucao,calculaTempoSaida(entrada_execucao,tempo_execucao), null, getHost1(), "executando" ));
             }
             else
             {
                 tempo_restante = Integer.parseInt(tempo_execucao);
                 tempo_execucao = Integer.toString(quantum);
-                processos_criados.add(new Processo( geraPID(), nome, tamanho, tempo_execucao, tempo_criacao, entrada_execucao,calculaTempoSaida(entrada_execucao,tempo_execucao), tempo_restante,"Host 1", "executando" ));
+                processos_criados.add(new Processo( geraPID(), nome, tamanho, tempo_execucao, tempo_criacao, entrada_execucao,calculaTempoSaida(entrada_execucao,tempo_execucao), tempo_restante, getHost1(), "executando" ));
             }
             /** core2 do host1 recebe o processo. */
             host1.setCore2(processos_criados.get(processos_criados.size() - 1));
@@ -423,13 +570,13 @@ public class Gerenciador
                 if ( escalonador.equals("1") )
                 {
                     /** Cria o processo, adicionando ao arraylist de processos_criados. */
-                    processos_criados.add(new Processo( geraPID(), nome, tamanho, tempo_execucao, tempo_criacao, entrada_execucao,calculaTempoSaida(entrada_execucao,tempo_execucao), null,"Host 2", "executando" ));
+                    processos_criados.add(new Processo( geraPID(), nome, tamanho, tempo_execucao, tempo_criacao, entrada_execucao,calculaTempoSaida(entrada_execucao,tempo_execucao), null, getHost2(), "executando" ));
                 }
                 else
                 {
                     tempo_restante = Integer.parseInt(tempo_execucao);
                     tempo_execucao = Integer.toString(quantum);
-                    processos_criados.add(new Processo( geraPID(), nome, tamanho, tempo_execucao, tempo_criacao, entrada_execucao,calculaTempoSaida(entrada_execucao,tempo_execucao), tempo_restante,"Host 2", "executando" ));
+                    processos_criados.add(new Processo( geraPID(), nome, tamanho, tempo_execucao, tempo_criacao, entrada_execucao,calculaTempoSaida(entrada_execucao,tempo_execucao), tempo_restante, getHost2(), "executando" ));
                 }
                 /** core1 do host2 recebe o processo. */
                 host2.setCore1(processos_criados.get(processos_criados.size() - 1));
@@ -441,13 +588,13 @@ public class Gerenciador
                 if ( escalonador.equals("1") )
                 {
                     /** Cria o processo, adicionando ao arraylist de processos_criados. */
-                    processos_criados.add(new Processo( geraPID(), nome, tamanho, tempo_execucao, tempo_criacao, entrada_execucao,calculaTempoSaida(entrada_execucao,tempo_execucao), null,"Host 2", "executando" ));
+                    processos_criados.add(new Processo( geraPID(), nome, tamanho, tempo_execucao, tempo_criacao, entrada_execucao,calculaTempoSaida(entrada_execucao,tempo_execucao), null, getHost2(), "executando" ));
                 }
                 else
                 {
                     tempo_restante = Integer.parseInt(tempo_execucao);
                     tempo_execucao = Integer.toString(quantum);
-                    processos_criados.add(new Processo( geraPID(), nome, tamanho, tempo_execucao, tempo_criacao, entrada_execucao,calculaTempoSaida(entrada_execucao,tempo_execucao), tempo_restante,"Host 2", "executando" ));
+                    processos_criados.add(new Processo( geraPID(), nome, tamanho, tempo_execucao, tempo_criacao, entrada_execucao,calculaTempoSaida(entrada_execucao,tempo_execucao), tempo_restante, getHost2(), "executando" ));
                 }
                 /** core2 do host2 recebe o processo. */
                 host2.setCore2(processos_criados.get(processos_criados.size() - 1));
@@ -459,13 +606,13 @@ public class Gerenciador
                 if ( escalonador.equals("1") )
                 {
                     /** Cria o processo, adicionando ao arraylist de processos_criados. */
-                    processos_criados.add(new Processo( geraPID(), nome, tamanho, tempo_execucao, tempo_criacao, entrada_execucao, null, null,"?", "apto" ));
+                    processos_criados.add(new Processo( geraPID(), nome, tamanho, tempo_execucao, tempo_criacao, entrada_execucao, null, null, null, "apto" ));
                 }
                 else
                 {
                     tempo_restante = Integer.parseInt(tempo_execucao);
                     tempo_execucao = Integer.toString(quantum);
-                    processos_criados.add(new Processo( geraPID(), nome, tamanho, tempo_execucao, tempo_criacao, entrada_execucao, null, tempo_restante,"?", "apto" ));
+                    processos_criados.add(new Processo( geraPID(), nome, tamanho, tempo_execucao, tempo_criacao, entrada_execucao, null, tempo_restante, null, "apto" ));
                 }
                 /** O último processo criado é adicionado na fila de aptos. */
                 fila_aptos.add(processos_criados.get(processos_criados.size() - 1));
@@ -542,11 +689,11 @@ public class Gerenciador
                 {
                     System.out.println("#"+processos_criados.get(aux).getPid()+"\t|"+processos_criados.get(aux).getNome()+"\t|"+processos_criados.get(aux).getTamanho()+"\t\t|"
                     +processos_criados.get(aux).getTempo_criacao()+"\t|"+processos_criados.get(aux).getTempo_execucao()+"\t\t|"+processos_criados.get(aux).getTempo_saida(0)+":"
-                    +processos_criados.get(aux).getTempo_saida(1)+":"+processos_criados.get(aux).getTempo_saida(2)+"\t|"+processos_criados.get(aux).getStatus()+"\t|"+processos_criados.get(aux).getHost()+"\t#");                
+                    +processos_criados.get(aux).getTempo_saida(1)+":"+processos_criados.get(aux).getTempo_saida(2)+"\t|"+processos_criados.get(aux).getStatus()+"\t|"+processos_criados.get(aux).getHost().getNome()+"\t#");                
                     
                     So.insereDadosArquivo("#"+processos_criados.get(aux).getPid()+"\t|"+processos_criados.get(aux).getNome()+"\t|"+processos_criados.get(aux).getTamanho()+"\t\t|"
                     +processos_criados.get(aux).getTempo_criacao()+"\t|"+processos_criados.get(aux).getTempo_execucao()+"\t\t|"+processos_criados.get(aux).getTempo_saida(0)+":"
-                    +processos_criados.get(aux).getTempo_saida(1)+":"+processos_criados.get(aux).getTempo_saida(2)+"\t|"+processos_criados.get(aux).getStatus()+"\t|"+processos_criados.get(aux).getHost()+"\t#%n");                
+                    +processos_criados.get(aux).getTempo_saida(1)+":"+processos_criados.get(aux).getTempo_saida(2)+"\t|"+processos_criados.get(aux).getStatus()+"\t|"+processos_criados.get(aux).getHost().getNome()+"\t#%n");                
 
                 }
             }
@@ -556,7 +703,7 @@ public class Gerenciador
                 {
                     System.out.println("#"+processos_criados.get(aux).getPid()+"\t|"+processos_criados.get(aux).getNome()+"\t|"+processos_criados.get(aux).getTamanho()+"\t\t|"
                     +processos_criados.get(aux).getTempo_criacao()+"\t|"+processos_criados.get(aux).getTempo_execucao()+"\t\t|"+processos_criados.get(aux).getTempo_saida(0)+":"
-                    +processos_criados.get(aux).getTempo_saida(1)+":"+processos_criados.get(aux).getTempo_saida(2)+"\t|"+processos_criados.get(aux).getStatus()+"\t|"+processos_criados.get(aux).getHost()+"\t#");                
+                    +processos_criados.get(aux).getTempo_saida(1)+":"+processos_criados.get(aux).getTempo_saida(2)+"\t|"+processos_criados.get(aux).getStatus()+"\t|"+processos_criados.get(aux).getHost().getNome()+"\t#");                
                     
                     So.insereDadosArquivo("#"+processos_criados.get(aux).getPid()+"\t|"+processos_criados.get(aux).getNome()+"\t|"+processos_criados.get(aux).getTamanho()+"\t\t|"
                     +processos_criados.get(aux).getTempo_criacao()+"\t|"+processos_criados.get(aux).getTempo_execucao()+"\t\t|"+processos_criados.get(aux).getTempo_saida(0)+":"

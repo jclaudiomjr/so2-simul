@@ -6,16 +6,16 @@ package so;
  */
 public class Processo {
     
-    private final Integer pid; /** pid receberá o pid gerado pelo 'geraPID()'. */    
-    private final String nome; /** nome receberá o nome do processo informado pelo usuário. */
-    private final String tempo_execucao; /** tempo_execução receberá o tempo de execução do processo, que é informado eplo usuário. */
-    private final String tamanho; /** tamanho receberá o tamanho do processo, que é informado pelo usuário, */    
-    private final String tempo_criacao; /** tempo_criação receberá o tempo de criação, gerado pelo 'getTime()'. */
-    private String tempo_entrada_execucao; /** tempo_entrada_execucao receberá o tempo em que o processo entra em execução. */
-    private Integer tempo_saida[] = new Integer[3]; /** tempo_saida[] receberá o tempo em que o processo deve sair do processador */
-    private Integer tempo_restante_execucao;
-    private String host; /** host receberá o host que o processo será executado. */
-    private String status; /** status receberá o status do processo. */
+    private final Integer pid;      /** pid receberá o pid gerado pelo 'geraPID()'. */    
+    private final String nome;      /** nome receberá o nome do processo informado pelo usuário. */
+    private final String tempo_execucao;        /** tempo_execução receberá o tempo de execução do processo, que é informado eplo usuário. */
+    private final String tamanho;       /** tamanho receberá o tamanho do processo, que é informado pelo usuário, */    
+    private final String tempo_criacao;     /** tempo_criação receberá o tempo de criação, gerado pelo 'getTime()'. */
+    private String tempo_entrada_execucao;      /** tempo_entrada_execucao receberá o tempo em que o processo entra em execução. */
+    private Integer tempo_saida[] = new Integer[3];     /** tempo_saida[] receberá o tempo em que o processo deve sair do processador */
+    private Integer tempo_restante_execucao;        /** Controla o tempo restante que um processo tem para executar. Esta variável é utilizada apenas quando o escalonador usa quantum. */
+    private Host host;        /** host receberá o host que o processo será executado. */
+    private String status;      /** status receberá o status do processo. */
 
     /** Construtor da classe Processo.
      * @param pid - pid do processo.
@@ -29,7 +29,7 @@ public class Processo {
      * @param host - host do processo.
      * @param status - status do processo.
      */
-    public Processo(Integer pid, String nome, String tamanho, String tempo_execucao, String tempo_criacao, String tempo_entrada_execucao, Integer[] tempo_saida, Integer tempo_restante_execucao,String host, String status) 
+    public Processo(Integer pid, String nome, String tamanho, String tempo_execucao, String tempo_criacao, String tempo_entrada_execucao, Integer[] tempo_saida, Integer tempo_restante_execucao,Host host, String status) 
     {
         this.pid = pid;
         this.nome = nome;
@@ -115,11 +115,15 @@ public class Processo {
      * getter para obter o host do processo.
      * @return host - host em qual o processo está executando.
      */
-    public String getHost() 
+    public Host getHost() 
     {
         return host;
     }
     
+    public void setHost(Host host)
+    {
+        this.host = host;
+    }
     /**
      * getter para o status do processo (executando, finalizado, apto).
      * @return status - status atual do processo.
@@ -146,6 +150,4 @@ public class Processo {
     {
         return tempo_entrada_execucao;
     }
-    
-    
 }

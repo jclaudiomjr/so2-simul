@@ -52,7 +52,9 @@ public class So
         /** instrucao para possibilitar leitura do teclado. */
         Scanner sc = new Scanner(System.in);
         /** Limpa os arraylists antes de utiliza-los. Só por garantia. */
-        gerenciador.limpaArraylist();        
+        gerenciador.limpaArraylist();
+        gerenciador.getHost1().setNome("Host 1");
+        gerenciador.getHost2().setNome("Host 2");
         /** O arquivo externo "So_log.txt" é aberto para operações de saída através do objetoarquivo instanciado e criado a partir da classe FileWriter. */
         arquivo = new FileWriter("C:\\So_log.txt");
         /**  objeto de gravação gravarArquivo é associado a um fluxo de saída de dados baseado em caracteres através da classe PrinterWriter. */
@@ -248,7 +250,14 @@ public class So
         {
             while (controla_thread)
             {
-                gerenciador.verificaExecucao( gerenciador.getHost1().getCore1(), gerenciador.getHost1().getCore2(), gerenciador.getHost2().getCore1(), gerenciador.getHost2().getCore2());
+                if ( gerenciador.getHost1().getCore1() != null)
+                    gerenciador.verificaExecucaoThread( gerenciador.getHost1().getCore1());
+                if ( gerenciador.getHost1().getCore2() != null)
+                    gerenciador.verificaExecucaoThread( gerenciador.getHost1().getCore2());
+                if ( gerenciador.getHost2().getCore1() != null)
+                    gerenciador.verificaExecucaoThread( gerenciador.getHost2().getCore1());
+                if ( gerenciador.getHost2().getCore2() != null)
+                    gerenciador.verificaExecucaoThread( gerenciador.getHost2().getCore2());
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException ex) {

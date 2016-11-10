@@ -3,21 +3,22 @@ package so;
  *
  * @author JUNIOR
  */
-public class Host {
-    /** o core1 armazenará o processo designado a ele. */
-    private Processo core1;
-    /** o core2 armazenará o processo designado a ele. */
-    private Processo core2;
+public class Host {    
+    private String nome;
+    private Processo core1;     /** o core1 armazenará o processo designado a ele. */
+    private Processo core2;     /** o core2 armazenará o processo designado a ele. */
 
-    /** Construtor dos Hosts, já setando os cores para null pois não terão nenhum processo executando (obviamente). */
+    /** Construtor dos Hosts, já setando os cores para null pois não terão nenhum processo executando. */
     public Host() 
     {   
+        this.nome = null;
         this.core1 = null;
         this.core2 = null;
     }    
 
     /** Método retorna o número do core que está disponível, ou se nenhum core está disponível.
-     * @return int numero do core disponível. Sendo 1 para core1, 2 para core2 e 0 para nenhum core disponível.
+     * @return int numero do core disponível. 
+     * Sendo 1 para core1, 2 para core2 e 0 para nenhum core disponível.
      */
     public int getCore_Disp()
     {
@@ -65,4 +66,13 @@ public class Host {
         return core2;
     }
     
+    public void setNome(String nome)
+    {
+        this.nome = nome;
+    }
+    
+    public String getNome()
+    {
+        return nome;
+    }
 }
