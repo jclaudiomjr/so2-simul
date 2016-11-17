@@ -5,14 +5,9 @@ package so;
  * ArrayList: para utilizar Arraylist de processos criados e fila de prontos.
  */
 import java.util.ArrayList;
-import java.lang.Thread;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Classe Gerenciador - Responsável pela gerencia dos processos.
@@ -76,33 +71,20 @@ public class Gerenciador
         return host2;
     }
     
-    /** Metodo que verifica se o tempo de execução de cada processo em execução não excedeu seu tempo
-     * 
-     * @param h1core1 - core1 do host1
-     * @param h1core2 - core2 do host1
-     * @param h2core1 - core1 do host2
-     * @param h2core2 - core2 do host2
-     */
-    
-    
-    public void verificaExecucaoThread(Processo processo_executando)
-    {
-        
-        /** separa_string_tempo_atual receberá, os valores retornado de gettime(), de forma separada por ":". */
-        //String separa_string_tempo_atual[] = So.getTime().split(":");
-        //Integer tempo_atual[] = new Integer[3];
 
-        /** tempo_atual recebe os valores de separa_string_tempo_atual para ser feita a verificação posteriormente */
-        //tempo_atual[0] = Integer.parseInt(separa_string_tempo_atual[0]);
-        //tempo_atual[1] = Integer.parseInt(separa_string_tempo_atual[1]);
-        //tempo_atual[2] = Integer.parseInt(separa_string_tempo_atual[2]);    
+    
+    /**
+     * Método que monitora os tempos de execução dos processos na thread.
+     * @param processo_executando - processo que está em execução
+     */
+    public void verificaExecucaoThread(Processo processo_executando)
+    {  
         Calendar tempo_atual = Calendar.getInstance();
         Calendar tempo_saida = Calendar.getInstance();
         tempo_atual.setTime(So.getTempoAtual());
         tempo_saida.setTime(processo_executando.getTempo_saida());
-        //Date tempo_atual = So.getTempoAtual();
         SimpleDateFormat formato = new SimpleDateFormat("HH:mm:ss");
-        //System.out.println(tempo_atual.compareTo(tempo_saida));
+        
         if ( tempo_atual.compareTo(tempo_saida) > 0 )
         {
             if ( ( processo_executando.getTempo_restante_execucao() == null) || ( processo_executando.getTempo_restante_execucao() <= 0 ) )
@@ -120,6 +102,7 @@ public class Gerenciador
                 }
                 processo_executando.setTempo_restante_execucao(Integer.parseInt(processo_executando.getTempo_execucao()));
                 
+                processo_executando.setStatus("apto");
                 fila_aptos.add(processo_executando);
             }
             
@@ -299,10 +282,7 @@ public class Gerenciador
         Integer tempo_saida[] = new Integer[3];
         
         Calendar tempo_saida_exec = Calendar.getInstance();
-        tempo_saida_exec.setTime(new Date());
-        //SimpleDateFormat formato = new SimpleDateFormat("HH:mm:ss");
-        //Date tempo_saida_exec = null; 
-        
+        tempo_saida_exec.setTime(new Date());        
         
         /**
          * tempo_saida[0] - é refetente a hora hh.
@@ -334,10 +314,8 @@ public class Gerenciador
         tempo_saida_exec.set(Calendar.HOUR_OF_DAY, tempo_saida[0]); //zerando as horas, minuots e segundos..
         tempo_saida_exec.set(Calendar.MINUTE, tempo_saida[1]);
         tempo_saida_exec.set(Calendar.SECOND, tempo_saida[2]);
-        //formato.parse(tempo_saida[0].toString()+":"+tempo_saida[1].toString()+":"+tempo_saida[0].toString());
 
         return tempo_saida_exec.getTime();
-        //return tempo_saida_exec;
     }
     
     /**
@@ -399,9 +377,8 @@ public class Gerenciador
         if ( ( processos_criados.isEmpty()) && ( fila_aptos.isEmpty()) )
         {
             System.out.println("Não há processo executando ou apto!");
-            So.insereDadosArquivo(So.getTime()+" não foi criado nenhum processo.%n");
+            So.insereDadosArquivo(formato.format(So.getTempoAtual())+" não foi criado nenhum processo.%n");
         }
-        
     }
     
     /** Método que irá mostrar informações da memória de acordo com o parâmetro passado.

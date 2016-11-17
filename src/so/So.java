@@ -32,17 +32,13 @@ import java.util.logging.Logger;
  */
 public class So
 {
-    /** gerenciador é criado. Instância da classe Gerenciador. */
-    private static final Gerenciador gerenciador = new Gerenciador();
-    /** comando receberá o comando informado pelo usuário. */
-    private static String comando = null;
-    /** separa_string_comando é um array de string, receberá os valores quebrados da string comando. */
-    private static String separa_string_comando[] = new String[4]; 
-    /** arquivo ¨"vai ser" o arquivo txt que armazenará informações do programa. */    
-    private static FileWriter arquivo;
-    /** gravarArquivo irá inserir dados no arquivo. */
-    private static PrintWriter gravarArquivo;
-    private static boolean controla_thread;
+    
+    private static final Gerenciador gerenciador = new Gerenciador();   /** gerenciador é criado. Instância da classe Gerenciador. */
+    private static String comando = null;       /** comando receberá o comando informado pelo usuário. */    
+    private static String separa_string_comando[] = new String[4];  /** separa_string_comando é um array de string, receberá os valores quebrados da string comando. */        
+    private static FileWriter arquivo;      /** arquivo ¨"vai ser" o arquivo txt que armazenará informações do programa. */    
+    private static PrintWriter gravarArquivo;       /** gravarArquivo irá inserir dados no arquivo. */
+    private static boolean controla_thread;     /** Variável que controlará a execução da thread. */
     
     
     /** MAIN
@@ -51,22 +47,20 @@ public class So
      */
     public static void main(String[] args) throws IOException
     {
-        /** instrucao para possibilitar leitura do teclado. */
-        Scanner sc = new Scanner(System.in);
-        /** Limpa os arraylists antes de utiliza-los. Só por garantia. */
-        gerenciador.limpaArraylist();
-        gerenciador.getHost1().setNome("Host 1");
-        gerenciador.getHost2().setNome("Host 2");
-        /** O arquivo externo "So_log.txt" é aberto para operações de saída através do objetoarquivo instanciado e criado a partir da classe FileWriter. */
-        arquivo = new FileWriter("C:\\So_log.txt");
-        /**  objeto de gravação gravarArquivo é associado a um fluxo de saída de dados baseado em caracteres através da classe PrinterWriter. */
-        gravarArquivo = new PrintWriter(arquivo);
+        
+        Scanner sc = new Scanner(System.in);        /** instrucao para possibilitar leitura do teclado. */        
+        gerenciador.limpaArraylist();       /** Limpa os arraylists antes de utiliza-los. Só por garantia. */
+        gerenciador.getHost1().setNome("Host 1");       /** A classe Host tem o atributo 'nome' para facilitar os "prints" nas tabelas, por isso este comando é necessário. */
+        gerenciador.getHost2().setNome("Host 2");        
+        arquivo = new FileWriter("C:\\So_log.txt");     /** O arquivo externo "So_log.txt" é aberto para operações de saída através do objetoarquivo instanciado e criado a partir da classe FileWriter. */        
+        gravarArquivo = new PrintWriter(arquivo);       /**  objeto de gravação gravarArquivo é associado a um fluxo de saída de dados baseado em caracteres através da classe PrinterWriter. */
         
         printOpcoesEscalonador();        
         gerenciador.setEscalonador(sc.nextLine());      
         
         for (;;)
         {
+            /** É verificado o escalonador apenas para mostrar na tela qual deles foi selecionado. */
             if ( gerenciador.getEscalonador().equals("1") )
             {    
                 System.out.println("Escalonador selecionado: 1 - Sem quantum.");
@@ -107,26 +101,21 @@ public class So
             
         }
         
-        new Thread(verifica).start();
         controla_thread = true;
+        new Thread(verifica).start(); /** Início da thread que verificará os tempos de execução dos processos. */       
         sc.reset();
         /** Iteração para ficar pedindo o comando do usuário. Só terá fim caso o usuário digite EXIT */
         for (;;)
         {            
-            
-            //comando = sc.nextLine();
-            
             /** Mostra o menu de opções. */
             printOpcoesComando();
             System.out.print("Comando:");
             /** Instrução para ler o valor inserido no teclado, até houver a quebra de linha (ENTER) */
             comando = sc.nextLine();
-            
-                      
+                                  
             /** o comando é quebrado e atribuído para um array de string */
             separa_string_comando = comando.split(" ");
-            
-            
+                        
             /** Verifica a primeira posição do array de string. Se for CREATE o gerenciador já cria o processo */
             if ( ( separa_string_comando[0].equals("CREATE") ) || ( separa_string_comando[0].equals("create") ) )
             {
@@ -164,7 +153,6 @@ public class So
             {            
                 arquivo.close();
                 controla_thread = false;
-                //Thread.currentThread().stop();
                 break;
             } 
             /** Se for alguma coisa diferente das opções do menu, entra aqui para informar comando invalido. */
@@ -174,14 +162,11 @@ public class So
             }
 
         }  
-            
-            
-       
         System.out.println("Arquivo txt gerado em \"C:\\So_log.txt\\ \" ");
         arquivo.close();
     }
     
-    /*
+    /**
      * Printa as opções de escalonador para o usuário.
      */
     public static void printOpcoesEscalonador()
@@ -212,21 +197,18 @@ public class So
      * Método que retorna a hora atual do sistema.
      * @return hora - hora atual do sistema
      */
-    public static String getTime() 
-    {
-	DateFormat formato_hora = new SimpleDateFormat("HH:mm:ss");
-	Date hora = new Date();
-        return formato_hora.format(hora);           
-    }
-    
+
+    /**
+     * Método que retorna o tempo atual do sistema.
+     * @return calendar - Tempo atual do sistema.
+     */
     public static Date getTempoAtual() 
     {
 	Calendar calendar = new GregorianCalendar();
         calendar.setTime(new Date());        
         return calendar.getTime();     
     }
-    
-    
+        
     /**
      * Cabeçalho do arquivo txt.
      */
@@ -246,14 +228,9 @@ public class So
         gravarArquivo.printf(dados);
     }
     
-    
-    public void semEscalonador()
-    {
-        
-
-    }
-    
-    
+    /**
+     * Thread responsável por monitorar o tempo de execução doo processos.
+     */
     public static Runnable verifica = new Runnable()
     {
         public void run()

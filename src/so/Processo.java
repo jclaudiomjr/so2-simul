@@ -1,7 +1,6 @@
 package so;
 
 import java.util.Date;
-import java.util.Calendar;
 
 /**
  * 
@@ -15,7 +14,6 @@ public class Processo {
     private final String tamanho;       /** tamanho receberá o tamanho do processo, que é informado pelo usuário, */    
     private final Date tempo_criacao;     /** tempo_criação receberá o tempo de criação, gerado pelo 'getTime()'. */
     private String tempo_entrada_execucao;      /** tempo_entrada_execucao receberá o tempo em que o processo entra em execução. */
-    //private Integer tempo_saida[] = new Integer[3];     /** tempo_saida[] receberá o tempo em que o processo deve sair do processador */
     private Date tempo_saida;
     private Integer tempo_restante_execucao;        /** Controla o tempo restante que um processo tem para executar. Esta variável é utilizada apenas quando o escalonador usa quantum. */
     private Host host;        /** host receberá o host que o processo será executado. */
@@ -48,15 +46,6 @@ public class Processo {
     }
    
     /**
-     * setter para o atributo status.
-     * @param status - status do processo.
-     */
-    public void setStatus(String status) 
-    {
-        this.status = status;
-    }
-    
-    /**
      * getter para o pid do processo.
      * @return pid - pid do processo.
      */
@@ -72,24 +61,6 @@ public class Processo {
     public String getNome() 
     {
         return nome;
-    }
-    
-    /**
-     * Seta o tempo de execução do processo.
-     * @param tempo_execucao - tempo de execução do processo.
-     */
-    public void setTempo_execucao(String tempo_execucao)
-    {
-        this.tempo_execucao = tempo_execucao;
-    }
-    
-    /**
-     * getter para o tempo de execução do processo.
-     * @return tempo_execucao - tempo de execução do processo.
-     */
-    public String getTempo_execucao() 
-    {
-        return tempo_execucao;
     }
     
     /**
@@ -111,6 +82,51 @@ public class Processo {
     }
     
     /**
+     * setter para o atributo status.
+     * @param status - status do processo.
+     */
+    public void setStatus(String status) 
+    {
+        this.status = status;
+    }
+    
+    /**
+     * getter para o status do processo (executando, finalizado, apto).
+     * @return status - status atual do processo.
+     */
+    public String getStatus() 
+    {
+        return status;
+    }    
+
+    /**
+     * Seta o tempo de execução do processo.
+     * @param tempo_execucao - tempo de execução do processo.
+     */
+    public void setTempo_execucao(String tempo_execucao)
+    {
+        this.tempo_execucao = tempo_execucao;
+    }
+    
+    /**
+     * getter para o tempo de execução do processo.
+     * @return tempo_execucao - tempo de execução do processo.
+     */
+    public String getTempo_execucao() 
+    {
+        return tempo_execucao;
+    }
+    
+    /**
+     * Seta o tempo de saída do processo (calculado)
+     * @param tempo_saida - tempo de saída do processo.
+     */
+    public void setTempo_saida(Date tempo_saida)
+    {
+        this.tempo_saida = tempo_saida; // REVISAR
+    }
+    
+    /**
      * getter para o tempo em que o processo deve sair do processador. Método usado para fazer comparações de quando ele deve sair do processador.
      * @param indice - indice para o array. Sendo indice 0(zero) para hora(hh), indice 1 para minutos(mm) e indice 2 para segundos(ss).
      * @return tempo_saida - tempo de saída que o processo deve desocupar o processador de acordo com o indice informado.
@@ -122,10 +138,15 @@ public class Processo {
         return tempo_saida;
     }
     
-    public void setTempo_saida(Date tempo_saida)
+    /**
+     * Seta o host do processo.
+     * @param host - Host que o processo está executando.
+     */
+    public void setHost(Host host)
     {
-        this.tempo_saida = tempo_saida; // REVISAR
+        this.host = host;
     }
+     
     /**
      * getter para obter o host do processo.
      * @return host - host em qual o processo está executando.
@@ -133,19 +154,6 @@ public class Processo {
     public Host getHost() 
     {
         return host;
-    }
-    
-    public void setHost(Host host)
-    {
-        this.host = host;
-    }
-    /**
-     * getter para o status do processo (executando, finalizado, apto).
-     * @return status - status atual do processo.
-     */
-    public String getStatus() 
-    {
-        return status;
     }
     
     /**
@@ -166,15 +174,22 @@ public class Processo {
         return tempo_entrada_execucao;
     }
     
+    /**
+     * Seta o tempo restante que o processo tem para executar.
+     * @param tempo_restante - tempo restante de execução do processo.
+     */
     public void setTempo_restante_execucao(Integer tempo_restante)
     {
         this.tempo_restante_execucao -= tempo_restante;
     }
     
+    /**
+     * Getter para obter o tempo restante que o processo tem para executar.
+     * @return tempo_restante_execucao - tempo restante de execução do processo.
+     */
     public Integer getTempo_restante_execucao()
     {
         return tempo_restante_execucao;
     }
     
-   
 }

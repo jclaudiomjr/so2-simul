@@ -1,4 +1,6 @@
 package so;
+
+
 /**
  *
  * @author JUNIOR
@@ -57,6 +59,7 @@ public class Host {
     {
         return core1;
     }
+    
     /**
      * getter para obter o processo que está ocupando o core2.
      * @return core2 - processo que está ocupando o core2.
@@ -66,11 +69,19 @@ public class Host {
         return core2;
     }
     
+    /**
+     * Seta o nome do Host ("Host 1" e "Host 2").
+     * @param nome - Nome do Host.
+     */
     public void setNome(String nome)
     {
         this.nome = nome;
     }
     
+    /**
+     * Getter para obter o nome do Host.
+     * @return nome - Retorna o nome do Host.
+     */
     public String getNome()
     {
         return nome;
