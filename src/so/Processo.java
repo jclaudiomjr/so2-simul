@@ -1,5 +1,8 @@
 package so;
 
+import java.util.Date;
+import java.util.Calendar;
+
 /**
  * 
  * @author JUNIOR
@@ -8,11 +11,12 @@ public class Processo {
     
     private final Integer pid;      /** pid receberá o pid gerado pelo 'geraPID()'. */    
     private final String nome;      /** nome receberá o nome do processo informado pelo usuário. */
-    private final String tempo_execucao;        /** tempo_execução receberá o tempo de execução do processo, que é informado eplo usuário. */
+    private String tempo_execucao;        /** tempo_execução receberá o tempo de execução do processo, que é informado eplo usuário. */
     private final String tamanho;       /** tamanho receberá o tamanho do processo, que é informado pelo usuário, */    
-    private final String tempo_criacao;     /** tempo_criação receberá o tempo de criação, gerado pelo 'getTime()'. */
+    private final Date tempo_criacao;     /** tempo_criação receberá o tempo de criação, gerado pelo 'getTime()'. */
     private String tempo_entrada_execucao;      /** tempo_entrada_execucao receberá o tempo em que o processo entra em execução. */
-    private Integer tempo_saida[] = new Integer[3];     /** tempo_saida[] receberá o tempo em que o processo deve sair do processador */
+    //private Integer tempo_saida[] = new Integer[3];     /** tempo_saida[] receberá o tempo em que o processo deve sair do processador */
+    private Date tempo_saida;
     private Integer tempo_restante_execucao;        /** Controla o tempo restante que um processo tem para executar. Esta variável é utilizada apenas quando o escalonador usa quantum. */
     private Host host;        /** host receberá o host que o processo será executado. */
     private String status;      /** status receberá o status do processo. */
@@ -29,7 +33,7 @@ public class Processo {
      * @param host - host do processo.
      * @param status - status do processo.
      */
-    public Processo(Integer pid, String nome, String tamanho, String tempo_execucao, String tempo_criacao, String tempo_entrada_execucao, Integer[] tempo_saida, Integer tempo_restante_execucao,Host host, String status) 
+    public Processo(Integer pid, String nome, String tamanho, String tempo_execucao, Date tempo_criacao, String tempo_entrada_execucao, Date tempo_saida, Integer tempo_restante_execucao,Host host, String status) 
     {
         this.pid = pid;
         this.nome = nome;
@@ -71,6 +75,15 @@ public class Processo {
     }
     
     /**
+     * Seta o tempo de execução do processo.
+     * @param tempo_execucao - tempo de execução do processo.
+     */
+    public void setTempo_execucao(String tempo_execucao)
+    {
+        this.tempo_execucao = tempo_execucao;
+    }
+    
+    /**
      * getter para o tempo de execução do processo.
      * @return tempo_execucao - tempo de execução do processo.
      */
@@ -92,7 +105,7 @@ public class Processo {
      * getter para o tempo de criação do processo.
      * @return tempo_criacao - tempo de criação do processo.
      */
-    public String getTempo_criacao() 
+    public Date getTempo_criacao() 
     {
         return tempo_criacao;
     }
@@ -102,12 +115,14 @@ public class Processo {
      * @param indice - indice para o array. Sendo indice 0(zero) para hora(hh), indice 1 para minutos(mm) e indice 2 para segundos(ss).
      * @return tempo_saida - tempo de saída que o processo deve desocupar o processador de acordo com o indice informado.
      */
-    public Integer getTempo_saida(int indice)
+    public Date getTempo_saida()
     {
-        return tempo_saida[indice];
+       
+       
+        return tempo_saida;
     }
     
-    public void setTempo_saida(Integer tempo_saida[])
+    public void setTempo_saida(Date tempo_saida)
     {
         this.tempo_saida = tempo_saida; // REVISAR
     }
@@ -150,4 +165,16 @@ public class Processo {
     {
         return tempo_entrada_execucao;
     }
+    
+    public void setTempo_restante_execucao(Integer tempo_restante)
+    {
+        this.tempo_restante_execucao -= tempo_restante;
+    }
+    
+    public Integer getTempo_restante_execucao()
+    {
+        return tempo_restante_execucao;
+    }
+    
+   
 }

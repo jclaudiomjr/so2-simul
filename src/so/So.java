@@ -20,6 +20,8 @@ import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.io.IOException;
 import java.lang.Thread;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -129,7 +131,7 @@ public class So
             if ( ( separa_string_comando[0].equals("CREATE") ) || ( separa_string_comando[0].equals("create") ) )
             {
                 /** gerenciador cria um processo, já enviando as informações das próximas posições do array de string. */
-                gerenciador.criarProcesso(separa_string_comando[1], separa_string_comando[2], separa_string_comando[3], getTime());               
+                gerenciador.criarProcesso(separa_string_comando[1], separa_string_comando[2], separa_string_comando[3], getTempoAtual());               
             } 
             /** Verifica a primeira posição do array de string. Se for PS o gerenciador irá mostrar a tabela de processos */
             else if ( (separa_string_comando[0].equals("PS") ) || ( separa_string_comando[0].equals("ps") ) )
@@ -217,6 +219,14 @@ public class So
         return formato_hora.format(hora);           
     }
     
+    public static Date getTempoAtual() 
+    {
+	Calendar calendar = new GregorianCalendar();
+        calendar.setTime(new Date());        
+        return calendar.getTime();     
+    }
+    
+    
     /**
      * Cabeçalho do arquivo txt.
      */
@@ -259,7 +269,7 @@ public class So
                 if ( gerenciador.getHost2().getCore2() != null)
                     gerenciador.verificaExecucaoThread( gerenciador.getHost2().getCore2());
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(4000);
                 } catch (InterruptedException ex) {
                     Logger.getLogger(So.class.getName()).log(Level.SEVERE, null, ex);
                 }
